@@ -34,6 +34,6 @@ jobs:
       - name: Build Docker image again
         run: docker build -t myapp -f Dockerfile .
 
-      # Запуск контейнера с тестами sss
+      # Запуск контейнера с тестами sssh
       - name: Run tests inside Docker
         run: docker run --rm myapp
