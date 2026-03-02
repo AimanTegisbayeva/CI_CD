@@ -1,4 +1,4 @@
-name: Python Test
+name: Python CI with Docker
 
 on:
   push:
@@ -7,29 +7,33 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Клонируем репозиторий
+      # Клонируем репозиторий
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Docker поднимаем
-        run: docker build -t myapp .
+      # Debug: проверить Dockerfile
+      - name: Show Dockerfile info
+        run: |
+          ls -la
+          wc -c Dockerfile
+          cat Dockerfile
+
+      # Сборка Docker образа
+      - name: Build Docker image
+        run: docker build -t myapp -f Dockerfile .
 
   test:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Клонируем репозиторий
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Docker поднимаем(Опять)
-        run: docker build -t myapp .
+      # Сборка Docker образа повторно, если нужен fresh build
+      - name: Build Docker image again
+        run: docker build -t myapp -f Dockerfile .
 
-      - name: Тесты внути контейнера
+      # Запуск контейнера с тестами
+      - name: Run tests inside Docker
         run: docker run --rm myapp
-        
-    #   - name: CD процесс (Деплой)
-    #     run: |
-    #       # Учти, что папка ../staging живет только внутри этого раннера
-    #       mkdir -p ../staging
-    #       cp -r . ../staging/
